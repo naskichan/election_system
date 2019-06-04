@@ -1,0 +1,50 @@
+@media screen {
+.head {
+    font-weight: 1000;
+    height: 2vw;
+}
+.entry {
+    height: 1vw;
+}
+.explain {
+    height: 2vw;
+}
+.site {
+    font-weight: 1000;
+    height: 1vw;
+}
+.hug {
+    position: relative;
+    width: 12vw;
+    float: left;
+    border: 2px solid grey;
+    margin: 2px;
+    height: 6vw;
+    font-size: 0.85vw;
+}
+}
+@media print {
+    .head {
+        font-weight: 1000;
+        height: 2vw;
+    }
+    .entry {
+        height: 1vw;
+    }
+    .explain {
+        height: 2vw;
+    }
+    .site {
+        font-weight: 1000;
+        height: 1vw;
+    }
+    .hug {
+        position: relative;
+        width: 12vw;
+        float: left;
+        border: 2px solid grey;
+        margin: 2px;
+        height: 6vw;
+        font-size: 0.85vw;
+    }
+}

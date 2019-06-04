@@ -1,0 +1,136 @@
+<head>
+    <link rel="shortcut icon" type="image/x-icon" href="res/logo.png">
+    <meta charset="utf-8"></head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,300italic' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="res/main.css" media="screen" />
+    <script src="res/jquery-1.12.4.js"></script>
+<body>
+    <center id="tlayer">
+    <div id="toplayer" onclick="tlayerClose()"></div>
+        <div id="window">
+            <div id="tlayerhead">
+                <div id="tlayerheading">
+                    <p id="vorschlag">Bitte mach einen Vorschlag</p>
+                </div>
+                <div id="tlayerheadclose" onclick="tlayerClose()"></div>
+            </div>
+            <div id="tlayerbody">
+                <textarea id="tlayertextfield" type="textarea" placeholder="Welche Idee hast du für ein Motto. Gib bitte 1-2 Vorschläge an..."></textarea>
+                <div id=tlayerbodyfoot>
+                    <button id="tlayersubmit" onclick="tlayersubmit()">Senden</button>
+                </div>
+            </div>
+        </div>
+        </center>
+    <center id="main">
+            
+        <div id="hug">
+            <div class="head">    
+                <div id="heading">
+                    <p1>Abi 2018 Abstimmung</p1>
+                </div>
+            </div>
+            <div class="main">
+                <div id="content">
+                    <h2>Gib jetzt deine Stimme ab!</h2>
+                    <div id="inputwrapper">
+                        <div id="inputfield">
+                            <input id="text" type="number" placeholder="Gib hier deinen Code ein..">
+                        </div>
+                        <button id="submit" name="los" onClick="losClicked()">Los!</button>
+                    </div>
+                </div>
+            </div>
+            <div id="foot">
+                <div id="foottext">
+                    <p id="inter">Eine Initiative von Shawen Hannappel</p>
+                    <div id="links">
+                        <a href="res/datenschutz.php">Datenschutz</a>
+                        <a href="res/impressum.php">Impressum</a>
+                    </div>
+                </div>
+            </div>
+        
+        </div>
+    </center>
+    <script>
+        $id = 0;
+        function tlayerOpen() {
+            document.getElementById("tlayer").style.visibility = 'visible';
+        }
+        function tlayerClose() {
+            document.getElementById("tlayer").style.visibility = 'hidden';
+        }
+        function losClicked() {
+            $val = document.getElementById("text").value;
+            
+            $regex = /^[0-9]+$/;
+            if($val.match($regex)) {
+                $.get("res/scripts/getCodeStatus.php", {ID: $val})
+		          .done(function(data) {
+                    if(data == "false") {
+                        console.log("Wahlrecht erteilt");
+                        $id = $val;
+                        tlayerOpen();
+                    }
+                    else if(data == "true") {
+                        alert("Du hast bereits gewählt. Bitte versuche es später erneut.");
+                    }
+                    else if(data == "NaN") {
+                        alert("Code ungültig, hast du dich vielleicht vertippt?");
+                    }
+                });
+            }
+        }
+        async function tlayersubmit() {
+            $val = document.getElementById("tlayertextfield").value;
+            hackCheck($id, function(data) {
+            if(data == "ok") {
+                $.get("res/scripts/sendOffer.php", {ID: $id, Offer: $val})
+                    .done(function(data) {
+                        if(data != "") {
+                            alert("Ein Fehler ist aufgetreten, bitte wende dich an den Administrator.");
+                        }
+                        else {
+                            switchCode();
+                            tlayerClose();
+                            alert("Vielen Dank. Ein Admin wird sich bald mit deinem Vorschlag beschäftigen.");
+                        }
+                    });
+                }
+                else if(data == "hack") {
+                    tlayerClose();
+                    alert("Ein Fehler ist aufgetreten, bitte versuch es später erneut");
+                }
+            });
+        }
+        function switchCode() {
+            $.get("res/scripts/switchCode.php", {ID: $id})
+            .done(function(data) {
+            });
+        }
+        function genCodes() {
+            $.get("res/scripts/genCodes.php");
+        }
+        function hackCheck($val, callback) {
+            console.log("Verifying identity...");
+            if($val == 0) {
+                console.log("Error: Unauthorized User!");
+                callback("hack");
+            }
+            else {
+                $.get("res/scripts/checkId.php", {ID: $val})
+                .done(function(data) {
+                    if(data == "ok") {
+                        callback(data);
+                    }
+                    else if(data == "hack") {
+                        console.log("Error: Unauthorized User!");
+                        callback(data);
+                    }
+                });
+            }
+        }
+    </script>
+</body>
